@@ -56,8 +56,17 @@ uniqueproductstate_write=Créer/Mettre à jour un état des lieux de produits s�
 uniqueproductstate_delete=Supprimer un état des lieux de produits sérialisés
 
 #
-# States
+# States for lines
 #
 UPStateNew=Neuf
 UPStateStriped=Rayé
 UPStateSecondHand=Occasion
+
+#
+# Status for uniqueProductState
+#
+Ready=Prêt
+Done=Réalisé
+ToDone=Marquer l'état des lieux réalisé
+ConfirmDoneAsk=L'état des lieux produit <strong>%s</strong> a-t-il été réalisé ?
+ConfirmReOpenUPS=Voulez-vous vraiment réouvrir l'état des lieux produit <strong>%s</strong> ?

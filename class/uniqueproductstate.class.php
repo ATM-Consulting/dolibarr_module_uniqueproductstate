@@ -627,6 +627,31 @@ class UniqueProductState extends CommonObject
 		return $this->setStatusCommon($user, self::STATUS_DRAFT, $notrigger, 'UNIQUEPRODUCTSTATE_UNVALIDATE');
 	}
 
+
+	/**
+	 *	Set done status
+	 *
+	 *	@param	User	$user			Object user that modify
+	 *  @param	int		$notrigger		1=Does not execute triggers, 0=Execute triggers
+	 *	@return	int						<0 if KO, >0 if OK
+	 */
+	public function setDone($user, $notrigger = 0)
+	{
+		// Protection
+		if ($this->status <= self::STATUS_DRAFT)
+		{
+			return 0;
+		}
+
+		if (empty($user->rights->uniqueproductstate->uniqueproductstate->write))
+		{
+			$this->error='Permission denied';
+			return -1;
+		}
+
+		return $this->setStatusCommon($user, self::STATUS_DONE, $notrigger, 'UNIQUEPRODUCTSTATE_CLOSE');
+	}
+
 	/**
 	 *	Set cancel status
 	 *
@@ -661,18 +686,18 @@ class UniqueProductState extends CommonObject
 	 */
 	public function reopen($user, $notrigger = 0)
 	{
+
 		// Protection
 		if ($this->status != self::STATUS_DONE)
 		{
 			return 0;
 		}
 
-		/*if (! ((empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->rights->uniqueproductstate->write))
-		 || (! empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->rights->uniqueproductstate->uniqueproductstate_advance->validate))))
-		 {
-		 $this->error='Permission denied';
-		 return -1;
-		 }*/
+		if (empty($user->rights->uniqueproductstate->uniqueproductstate->write))
+		{
+			$this->error='Permission denied';
+			return -1;
+		}
 
 		return $this->setStatusCommon($user, self::STATUS_READY, $notrigger, 'UNIQUEPRODUCTSTATE_REOPEN');
 	}
@@ -798,12 +823,12 @@ class UniqueProductState extends CommonObject
 		{
 			global $langs;
 			//$langs->load("uniqueproductstate@uniqueproductstate");
-			$this->labelStatus[self::STATUS_DRAFT] = $langs->trans('Draft');
-			$this->labelStatus[self::STATUS_READY] = $langs->trans('Enabled');
-			$this->labelStatus[self::STATUS_DONE] = $langs->trans('Done');
-			$this->labelStatusShort[self::STATUS_DRAFT] = $langs->trans('Draft');
-			$this->labelStatusShort[self::STATUS_READY] = $langs->trans('Enabled');
-			$this->labelStatusShort[self::STATUS_DONE] = $langs->trans('Done');
+			$this->labelStatus[self::STATUS_DRAFT] = $langs->transnoentities('Draft');
+			$this->labelStatus[self::STATUS_READY] = $langs->transnoentities('Ready');
+			$this->labelStatus[self::STATUS_DONE] = $langs->transnoentities('Done');
+			$this->labelStatusShort[self::STATUS_DRAFT] = $langs->transnoentities('Draft');
+			$this->labelStatusShort[self::STATUS_READY] = $langs->transnoentities('Ready');
+			$this->labelStatusShort[self::STATUS_DONE] = $langs->transnoentities('Done');
 		}
 
 		$statusType = 'status'.$status;
@@ -968,7 +993,7 @@ class UniqueProductState extends CommonObject
 	 *  @param      null|array  $moreparams     Array to provide more information
 	 *  @return     int         				0 if KO, 1 if OK
 	 */
-	public function generateDocument($modele, $outputlangs, $hidedetails = 0, $hidedesc = 0, $hideref = 0, $moreparams = null)
+	/*public function generateDocument($modele, $outputlangs, $hidedetails = 0, $hidedesc = 0, $hideref = 0, $moreparams = null)
 	{
 		global $conf, $langs;
 
@@ -994,7 +1019,7 @@ class UniqueProductState extends CommonObject
 		}
 
 		return $result;
-	}
+	}*/
 
 	/**
 	 * Action executed by scheduler
