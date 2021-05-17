@@ -77,11 +77,15 @@ print load_fiche_titre($langs->trans($page_name), $linkback, 'object_uniqueprodu
 $head = uniqueproductstateAdminPrepareHead();
 print dol_get_fiche_head($head, 'about', '', 0, 'uniqueproductstate@uniqueproductstate');
 
-dol_include_once('/uniqueproductstate/core/modules/modUniqueProductState.class.php');
-$tmpmodule = new modUniqueProductState($db);
-print $tmpmodule->getDescLong();
+print '<div style="float: left;"><img src="../img/Dolibarr_Preferred_Partner_logo.png" /></div>';
+print '<div>'.$langs->trans('ATMAbout').'</div>';
 
 // Page end
 print dol_get_fiche_end();
+
+print '<br><div class="center">';
+print '<a href="http://www.atm-consulting.fr" target="_blank"><img src="../img/ATM_logo.jpg" /></a>';
+print '</div>';
+
 llxFooter();
 $db->close();

@@ -265,17 +265,17 @@ class modUniqueProductState extends DolibarrModules
 		// Add here entries to declare new permissions
 		/* BEGIN MODULEBUILDER PERMISSIONS */
 		$this->rights[$r][0] = $this->numero . $r; // Permission id (must not be already used)
-		$this->rights[$r][1] = 'Read objects of UniqueProductState'; // Permission label
+		$this->rights[$r][1] = 'uniqueproductstate_read'; // Permission label
 		$this->rights[$r][4] = 'uniqueproductstate'; // In php code, permission will be checked by test if ($user->rights->uniqueproductstate->level1->level2)
 		$this->rights[$r][5] = 'read'; // In php code, permission will be checked by test if ($user->rights->uniqueproductstate->level1->level2)
 		$r++;
 		$this->rights[$r][0] = $this->numero . $r; // Permission id (must not be already used)
-		$this->rights[$r][1] = 'Create/Update objects of UniqueProductState'; // Permission label
+		$this->rights[$r][1] = 'uniqueproductstate_write';// Permission label
 		$this->rights[$r][4] = 'uniqueproductstate'; // In php code, permission will be checked by test if ($user->rights->uniqueproductstate->level1->level2)
 		$this->rights[$r][5] = 'write'; // In php code, permission will be checked by test if ($user->rights->uniqueproductstate->level1->level2)
 		$r++;
 		$this->rights[$r][0] = $this->numero . $r; // Permission id (must not be already used)
-		$this->rights[$r][1] = 'Delete objects of UniqueProductState'; // Permission label
+		$this->rights[$r][1] = 'uniqueproductstate_delete';// Permission label
 		$this->rights[$r][4] = 'uniqueproductstate'; // In php code, permission will be checked by test if ($user->rights->uniqueproductstate->level1->level2)
 		$this->rights[$r][5] = 'delete'; // In php code, permission will be checked by test if ($user->rights->uniqueproductstate->level1->level2)
 		$r++;
@@ -484,7 +484,7 @@ class modUniqueProductState extends DolibarrModules
 		// Document templates
 		$moduledir = 'uniqueproductstate';
 		$myTmpObjects = array();
-		$myTmpObjects['UniqueProductState'] = array('includerefgeneration'=>0, 'includedocgeneration'=>0);
+		$myTmpObjects['UniqueProductState'] = array('includerefgeneration'=>1, 'includedocgeneration'=>0);
 
 		foreach ($myTmpObjects as $myTmpObjectKey => $myTmpObjectArray) {
 			if ($myTmpObjectKey == 'UniqueProductState') continue;
