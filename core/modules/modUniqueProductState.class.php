@@ -351,7 +351,7 @@ class modUniqueProductState extends DolibarrModules
             'fk_menu'=>'fk_mainmenu=uniqueproductstate',
             // This is a Left menu entry
             'type'=>'left',
-            'titre'=>'List UniqueProductState',
+            'titre'=>'ListUniqueProductState',
             'mainmenu'=>'uniqueproductstate',
             'leftmenu'=>'uniqueproductstate_uniqueproductstate',
             'url'=>'/uniqueproductstate/uniqueproductstate_list.php',
@@ -371,7 +371,7 @@ class modUniqueProductState extends DolibarrModules
             'fk_menu'=>'fk_mainmenu=uniqueproductstate,fk_leftmenu=uniqueproductstate_uniqueproductstate',
             // This is a Left menu entry
             'type'=>'left',
-            'titre'=>'New UniqueProductState',
+            'titre'=>'NewUniqueProductState',
             'mainmenu'=>'uniqueproductstate',
             'leftmenu'=>'uniqueproductstate_uniqueproductstate',
             'url'=>'/uniqueproductstate/uniqueproductstate_card.php?action=create',
