@@ -20,6 +20,9 @@ ATMAbout = This module has been developed by <a href="http://www.atm-consulting.
 LinkToThirparty=Link to thirdparty
 ListUniqueProductState=List of Unique Products States
 NewUniqueProductState=New Unique Products States
+ShippingDate=Shipping date
+CurrentState=Current state
+NoticedState=Noticed state
 
 # Module label 'ModuleUniqueProductStateName'
 ModuleUniqueProductStateName = UniqueProductState

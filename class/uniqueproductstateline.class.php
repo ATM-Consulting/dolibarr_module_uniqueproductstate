@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2017  Laurent Destailleur <eldy@users.sourceforge.net>
- * Copyright (C) 2021 atm-greg <https://www.atm-consulting.fr>
+ * Copyright (C) ---Put here your own copyright and developer email---
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,21 +17,20 @@
  */
 
 /**
- * \file        class/uniqueproductstate.class.php
+ * \file        class/uniqueproductstateline.class.php
  * \ingroup     uniqueproductstate
- * \brief       This file is a CRUD class file for UniqueProductState (Create/Read/Update/Delete)
+ * \brief       This file is a CRUD class file for UniqueProductStateline (Create/Read/Update/Delete)
  */
 
 // Put here all includes required by your class file
 require_once DOL_DOCUMENT_ROOT.'/core/class/commonobject.class.php';
-dol_include_once('uniqueproductstate/class/uniqueproductstateline.class.php');
 //require_once DOL_DOCUMENT_ROOT . '/societe/class/societe.class.php';
 //require_once DOL_DOCUMENT_ROOT . '/product/class/product.class.php';
 
 /**
- * Class for UniqueProductState
+ * Class for UniqueProductStateline
  */
-class UniqueProductState extends CommonObject
+class UniqueProductStateline extends CommonObject
 {
 	/**
 	 * @var string ID of module.
@@ -41,12 +40,12 @@ class UniqueProductState extends CommonObject
 	/**
 	 * @var string ID to identify managed object.
 	 */
-	public $element = 'uniqueproductstate';
+	public $element = 'uniqueproductstateline';
 
 	/**
 	 * @var string Name of table without prefix where object is stored. This is also the key used for extrafields management.
 	 */
-	public $table_element = 'uniqueproductstate_uniqueproductstate';
+	public $table_element = 'uniqueproductstate_uniqueproductstateline';
 
 	/**
 	 * @var int  Does this object support multicompany module ?
@@ -60,20 +59,15 @@ class UniqueProductState extends CommonObject
 	public $isextrafieldmanaged = 1;
 
 	/**
-	 * @var string String with name of icon for uniqueproductstate. Must be the part after the 'object_' into object_uniqueproductstate.png
+	 * @var string String with name of icon for uniqueproductstateline. Must be the part after the 'object_' into object_uniqueproductstateline.png
 	 */
-	public $picto = 'uniqueproductstate@uniqueproductstate';
+	public $picto = 'uniqueproductstateline@uniqueproductstate';
 
 
 	const STATUS_DRAFT = 0;
-	const STATUS_READY = 1;
-	const STATUS_DONE = 2;
+	const STATUS_VALIDATED = 1;
+	const STATUS_CANCELED = 9;
 
-	public $TStatus = array(
-		self::STATUS_DRAFT => 'Draft'
-		,self::STATUS_READY => 'Ready'
-		,self::STATUS_DONE => 'Done'
-	);
 
 	/**
 	 *  'type' field format ('integer', 'integer:ObjectClass:PathToClass[:AddCreateButtonOrNot[:Filter]]', 'sellist:TableName:LabelFieldName[:KeyFieldName[:KeyFieldParent[:Filter]]]', 'varchar(x)', 'double(24,8)', 'real', 'price', 'text', 'text:none', 'html', 'date', 'datetime', 'timestamp', 'duration', 'mail', 'phone', 'url', 'password')
@@ -107,53 +101,51 @@ class UniqueProductState extends CommonObject
 	 */
 	public $fields=array(
 		'rowid' => array('type'=>'integer', 'label'=>'TechnicalID', 'enabled'=>'1', 'position'=>1, 'notnull'=>1, 'visible'=>0, 'noteditable'=>'1', 'index'=>1, 'css'=>'left', 'comment'=>"Id"),
-		'ref' => array('type'=>'varchar(128)', 'label'=>'Ref', 'enabled'=>'1', 'position'=>10, 'notnull'=>1, 'visible'=>4, 'noteditable'=>'1', 'default'=>'(PROV)', 'index'=>1, 'searchall'=>1, 'showoncombobox'=>'1', 'comment'=>"Reference of object"),
-		'fk_soc' => array('type'=>'integer:Societe:societe/class/societe.class.php:1:status=1 AND entity IN (__SHARED_ENTITIES__)', 'label'=>'ThirdParty', 'enabled'=>'1', 'position'=>50, 'notnull'=>-1, 'visible'=>1, 'index'=>1, 'help'=>"LinkToThirparty",),
-		'note_public' => array('type'=>'html', 'label'=>'NotePublic', 'enabled'=>'1', 'position'=>61, 'notnull'=>0, 'visible'=>0,),
-		'note_private' => array('type'=>'html', 'label'=>'NotePrivate', 'enabled'=>'1', 'position'=>62, 'notnull'=>0, 'visible'=>0,),
 		'date_creation' => array('type'=>'datetime', 'label'=>'DateCreation', 'enabled'=>'1', 'position'=>500, 'notnull'=>1, 'visible'=>-2,),
 		'tms' => array('type'=>'timestamp', 'label'=>'DateModification', 'enabled'=>'1', 'position'=>501, 'notnull'=>0, 'visible'=>-2,),
 		'fk_user_creat' => array('type'=>'integer:User:user/class/user.class.php', 'label'=>'UserAuthor', 'enabled'=>'1', 'position'=>510, 'notnull'=>1, 'visible'=>-2, 'foreignkey'=>'user.rowid',),
 		'fk_user_modif' => array('type'=>'integer:User:user/class/user.class.php', 'label'=>'UserModif', 'enabled'=>'1', 'position'=>511, 'notnull'=>-1, 'visible'=>-2,),
-		'last_main_doc' => array('type'=>'varchar(255)', 'label'=>'LastMainDoc', 'enabled'=>'1', 'position'=>600, 'notnull'=>0, 'visible'=>0,),
 		'import_key' => array('type'=>'varchar(14)', 'label'=>'ImportId', 'enabled'=>'1', 'position'=>1000, 'notnull'=>-1, 'visible'=>-2,),
-		'model_pdf' => array('type'=>'varchar(255)', 'label'=>'Model pdf', 'enabled'=>'1', 'position'=>1010, 'notnull'=>-1, 'visible'=>0,),
-		'status' => array('type'=>'smallint', 'label'=>'Status', 'enabled'=>'1', 'position'=>1000, 'notnull'=>1, 'visible'=>4, 'index'=>1, 'arrayofkeyval'=>array('0'=>'Brouillon', '1'=>'Valid&eacute;', '2'=>'R&eacute;alis&eacute;'),'default'=>0,),
-		'date' => array('type'=>'date', 'label'=>'Date', 'enabled'=>'1', 'position'=>51, 'notnull'=>0, 'visible'=>1,),
+		'product_ref' => array('type'=>'varchar(128)', 'label'=>'Ref', 'enabled'=>'1', 'position'=>10, 'notnull'=>1, 'visible'=>1, 'index'=>1, 'comment'=>"Reference of linked product"),
+		'serial_number' => array('type'=>'varchar(255)', 'label'=>'AssetNumber', 'enabled'=>'1', 'position'=>15, 'notnull'=>1, 'visible'=>1, 'index'=>1,),
+		'shipping_date' => array('type'=>'datetime', 'label'=>'ShippingDate', 'enabled'=>'1', 'position'=>20, 'notnull'=>0, 'visible'=>1,),
+		'fk_current_state' => array('type'=>'integer', 'label'=>'CurrentState', 'enabled'=>'1', 'position'=>25, 'notnull'=>1, 'visible'=>1,),
+		'fk_noticed_state' => array('type'=>'integer', 'label'=>'NoticedState', 'enabled'=>'1', 'position'=>30, 'notnull'=>0, 'visible'=>1,),
+		'fk_product' => array('type'=>'integer', 'label'=>'Product', 'enabled'=>'1', 'position'=>5, 'notnull'=>1, 'visible'=>0, 'index'=>1, 'foreignkey'=>'product.rowid',),
+		'fk_uniqueproductstate' => array('type'=>'integer', 'label'=>'fk_uniqueproductstate', 'enabled'=>'1', 'position'=>40, 'notnull'=>1, 'visible'=>0, 'index'=>1,),
 	);
 	public $rowid;
-	public $ref;
-	public $fk_soc;
-	public $note_public;
-	public $note_private;
 	public $date_creation;
 	public $tms;
 	public $fk_user_creat;
 	public $fk_user_modif;
-	public $last_main_doc;
 	public $import_key;
-	public $model_pdf;
-	public $status;
-	public $date;
+	public $product_ref;
+	public $serial_number;
+	public $shipping_date;
+	public $fk_current_state;
+	public $fk_noticed_state;
+	public $fk_product;
+	public $fk_uniqueproductstate;
 	// END MODULEBUILDER PROPERTIES
 
 
 	// If this object has a subtable with lines
 
-	 /**
-	  * @var string    Name of subtable line
-	  */
-	 public $table_element_line = 'uniqueproductstate_uniqueproductstateline';
+	// /**
+	//  * @var string    Name of subtable line
+	//  */
+	// public $table_element_line = 'uniqueproductstate_uniqueproductstatelineline';
 
-	 /**
-	  * @var string    Field with ID of parent key if this object has a parent
-	  */
-	 public $fk_element = 'fk_uniqueproductstate';
+	// /**
+	//  * @var string    Field with ID of parent key if this object has a parent
+	//  */
+	// public $fk_element = 'fk_uniqueproductstateline';
 
-	 /**
-	  * @var string    Name of subtable class that manage subtable lines
-	  */
-	 public $class_element_line = 'UniqueProductStateline';
+	// /**
+	//  * @var string    Name of subtable class that manage subtable lines
+	//  */
+	// public $class_element_line = 'UniqueProductStatelineline';
 
 	// /**
 	//  * @var array	List of child tables. To test if we can delete object.
@@ -165,12 +157,12 @@ class UniqueProductState extends CommonObject
 	//  *               If name matches '@ClassNAme:FilePathClass;ParentFkFieldName' it will
 	//  *               call method deleteByParentField(parentId, ParentFkFieldName) to fetch and delete child object
 	//  */
-	// protected $childtablesoncascade = array('uniqueproductstate_uniqueproductstatedet');
+	// protected $childtablesoncascade = array('uniqueproductstate_uniqueproductstatelinedet');
 
-	 /**
-	  * @var UniqueProductStateLine[]     Array of subtable lines
-	  */
-	 public $lines = array();
+	// /**
+	//  * @var UniqueProductStatelineLine[]     Array of subtable lines
+	//  */
+	// public $lines = array();
 
 
 
@@ -189,7 +181,7 @@ class UniqueProductState extends CommonObject
 		if (empty($conf->multicompany->enabled) && isset($this->fields['entity'])) $this->fields['entity']['enabled'] = 0;
 
 		// Example to show how to set values of fields definition dynamically
-		/*if ($user->rights->uniqueproductstate->uniqueproductstate->read) {
+		/*if ($user->rights->uniqueproductstate->uniqueproductstateline->read) {
 			$this->fields['myfield']['visible'] = 1;
 			$this->fields['myfield']['noteditable'] = 0;
 		}*/
@@ -491,14 +483,14 @@ class UniqueProductState extends CommonObject
 		$error = 0;
 
 		// Protection
-		if ($this->status == self::STATUS_READY)
+		if ($this->status == self::STATUS_VALIDATED)
 		{
 			dol_syslog(get_class($this)."::validate action abandonned: already validated", LOG_WARNING);
 			return 0;
 		}
 
-		/*if (! ((empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->rights->uniqueproductstate->uniqueproductstate->write))
-		 || (! empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->rights->uniqueproductstate->uniqueproductstate->uniqueproductstate_advance->validate))))
+		/*if (! ((empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->rights->uniqueproductstate->uniqueproductstateline->write))
+		 || (! empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->rights->uniqueproductstate->uniqueproductstateline->uniqueproductstateline_advance->validate))))
 		 {
 		 $this->error='NotEnoughPermissions';
 		 dol_syslog(get_class($this)."::valid ".$this->error, LOG_ERR);
@@ -522,7 +514,7 @@ class UniqueProductState extends CommonObject
 			// Validate
 			$sql = "UPDATE ".MAIN_DB_PREFIX.$this->table_element;
 			$sql .= " SET ref = '".$this->db->escape($num)."',";
-			$sql .= " status = ".self::STATUS_READY;
+			$sql .= " status = ".self::STATUS_VALIDATED;
 			if (!empty($this->fields['date_validation'])) $sql .= ", date_validation = '".$this->db->idate($now)."'";
 			if (!empty($this->fields['fk_user_valid'])) $sql .= ", fk_user_valid = ".$user->id;
 			$sql .= " WHERE rowid = ".$this->id;
@@ -539,7 +531,7 @@ class UniqueProductState extends CommonObject
 			if (!$error && !$notrigger)
 			{
 				// Call trigger
-				$result = $this->call_trigger('UNIQUEPRODUCTSTATE_VALIDATE', $user);
+				$result = $this->call_trigger('UNIQUEPRODUCTSTATELINE_VALIDATE', $user);
 				if ($result < 0) $error++;
 				// End call triggers
 			}
@@ -553,16 +545,16 @@ class UniqueProductState extends CommonObject
 			if (preg_match('/^[\(]?PROV/i', $this->ref))
 			{
 				// Now we rename also files into index
-				$sql = 'UPDATE '.MAIN_DB_PREFIX."ecm_files set filename = CONCAT('".$this->db->escape($this->newref)."', SUBSTR(filename, ".(strlen($this->ref) + 1).")), filepath = 'uniqueproductstate/".$this->db->escape($this->newref)."'";
-				$sql .= " WHERE filename LIKE '".$this->db->escape($this->ref)."%' AND filepath = 'uniqueproductstate/".$this->db->escape($this->ref)."' and entity = ".$conf->entity;
+				$sql = 'UPDATE '.MAIN_DB_PREFIX."ecm_files set filename = CONCAT('".$this->db->escape($this->newref)."', SUBSTR(filename, ".(strlen($this->ref) + 1).")), filepath = 'uniqueproductstateline/".$this->db->escape($this->newref)."'";
+				$sql .= " WHERE filename LIKE '".$this->db->escape($this->ref)."%' AND filepath = 'uniqueproductstateline/".$this->db->escape($this->ref)."' and entity = ".$conf->entity;
 				$resql = $this->db->query($sql);
 				if (!$resql) { $error++; $this->error = $this->db->lasterror(); }
 
 				// We rename directory ($this->ref = old ref, $num = new ref) in order not to lose the attachments
 				$oldref = dol_sanitizeFileName($this->ref);
 				$newref = dol_sanitizeFileName($num);
-				$dirsource = $conf->uniqueproductstate->dir_output.'/uniqueproductstate/'.$oldref;
-				$dirdest = $conf->uniqueproductstate->dir_output.'/uniqueproductstate/'.$newref;
+				$dirsource = $conf->uniqueproductstate->dir_output.'/uniqueproductstateline/'.$oldref;
+				$dirdest = $conf->uniqueproductstate->dir_output.'/uniqueproductstateline/'.$newref;
 				if (!$error && file_exists($dirsource))
 				{
 					dol_syslog(get_class($this)."::validate() rename dir ".$dirsource." into ".$dirdest);
@@ -571,7 +563,7 @@ class UniqueProductState extends CommonObject
 					{
 						dol_syslog("Rename ok");
 						// Rename docs starting with $oldref with $newref
-						$listoffiles = dol_dir_list($conf->uniqueproductstate->dir_output.'/uniqueproductstate/'.$newref, 'files', 1, '^'.preg_quote($oldref, '/'));
+						$listoffiles = dol_dir_list($conf->uniqueproductstate->dir_output.'/uniqueproductstateline/'.$newref, 'files', 1, '^'.preg_quote($oldref, '/'));
 						foreach ($listoffiles as $fileentry)
 						{
 							$dirsource = $fileentry['name'];
@@ -589,7 +581,7 @@ class UniqueProductState extends CommonObject
 		if (!$error)
 		{
 			$this->ref = $num;
-			$this->status = self::STATUS_READY;
+			$this->status = self::STATUS_VALIDATED;
 		}
 
 		if (!$error)
@@ -625,32 +617,7 @@ class UniqueProductState extends CommonObject
 		 return -1;
 		 }*/
 
-		return $this->setStatusCommon($user, self::STATUS_DRAFT, $notrigger, 'UNIQUEPRODUCTSTATE_UNVALIDATE');
-	}
-
-
-	/**
-	 *	Set done status
-	 *
-	 *	@param	User	$user			Object user that modify
-	 *  @param	int		$notrigger		1=Does not execute triggers, 0=Execute triggers
-	 *	@return	int						<0 if KO, >0 if OK
-	 */
-	public function setDone($user, $notrigger = 0)
-	{
-		// Protection
-		if ($this->status <= self::STATUS_DRAFT)
-		{
-			return 0;
-		}
-
-		if (empty($user->rights->uniqueproductstate->uniqueproductstate->write))
-		{
-			$this->error='Permission denied';
-			return -1;
-		}
-
-		return $this->setStatusCommon($user, self::STATUS_DONE, $notrigger, 'UNIQUEPRODUCTSTATE_CLOSE');
+		return $this->setStatusCommon($user, self::STATUS_DRAFT, $notrigger, 'UNIQUEPRODUCTSTATELINE_UNVALIDATE');
 	}
 
 	/**
@@ -663,7 +630,7 @@ class UniqueProductState extends CommonObject
 	public function cancel($user, $notrigger = 0)
 	{
 		// Protection
-		if ($this->status != self::STATUS_READY)
+		if ($this->status != self::STATUS_VALIDATED)
 		{
 			return 0;
 		}
@@ -675,7 +642,7 @@ class UniqueProductState extends CommonObject
 		 return -1;
 		 }*/
 
-		return $this->setStatusCommon($user, self::STATUS_DONE, $notrigger, 'UNIQUEPRODUCTSTATE_CANCEL');
+		return $this->setStatusCommon($user, self::STATUS_CANCELED, $notrigger, 'UNIQUEPRODUCTSTATELINE_CANCEL');
 	}
 
 	/**
@@ -687,38 +654,20 @@ class UniqueProductState extends CommonObject
 	 */
 	public function reopen($user, $notrigger = 0)
 	{
-
 		// Protection
-		if ($this->status != self::STATUS_DONE)
+		if ($this->status != self::STATUS_CANCELED)
 		{
 			return 0;
 		}
 
-		if (empty($user->rights->uniqueproductstate->uniqueproductstate->write))
-		{
-			$this->error='Permission denied';
-			return -1;
-		}
+		/*if (! ((empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->rights->uniqueproductstate->write))
+		 || (! empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->rights->uniqueproductstate->uniqueproductstate_advance->validate))))
+		 {
+		 $this->error='Permission denied';
+		 return -1;
+		 }*/
 
-		return $this->setStatusCommon($user, self::STATUS_READY, $notrigger, 'UNIQUEPRODUCTSTATE_REOPEN');
-	}
-
-	/**
-	 *	Set the UPState date
-	 *
-	 *	@param      User	$user       Object user making change
-	 *	@param      int		$date		Date
-	 * 	@param     	int		$notrigger	1=Does not execute triggers, 0= execute triggers
-	 *	@return     int         		<0 if KO, >0 if OK
-	 */
-	public function set_date($user, $date, $notrigger = 0)
-	{
-		if ($user->rights->uniqueproductstate->uniqueproductstate->write && !empty($date))
-		{
-			$this->date=$date;
-			return $this->update($user, $notrigger);
-		}
-		return -1;
+		return $this->setStatusCommon($user, self::STATUS_VALIDATED, $notrigger, 'UNIQUEPRODUCTSTATELINE_REOPEN');
 	}
 
 	/**
@@ -739,14 +688,14 @@ class UniqueProductState extends CommonObject
 
 		$result = '';
 
-		$label = img_picto('', $this->picto).' <u>'.$langs->trans("UniqueProductState").'</u>';
+		$label = img_picto('', $this->picto).' <u>'.$langs->trans("UniqueProductStateline").'</u>';
 		if (isset($this->status)) {
 			$label .= ' '.$this->getLibStatut(5);
 		}
 		$label .= '<br>';
 		$label .= '<b>'.$langs->trans('Ref').':</b> '.$this->ref;
 
-		$url = dol_buildpath('/uniqueproductstate/uniqueproductstate_card.php', 1).'?id='.$this->id;
+		$url = dol_buildpath('/uniqueproductstate/uniqueproductstateline_card.php', 1).'?id='.$this->id;
 
 		if ($option != 'nolink')
 		{
@@ -761,7 +710,7 @@ class UniqueProductState extends CommonObject
 		{
 			if (!empty($conf->global->MAIN_OPTIMIZEFORTEXTBROWSER))
 			{
-				$label = $langs->trans("ShowUniqueProductState");
+				$label = $langs->trans("ShowUniqueProductStateline");
 				$linkclose .= ' alt="'.dol_escape_htmltag($label, 1).'"';
 			}
 			$linkclose .= ' title="'.dol_escape_htmltag($label, 1).'"';
@@ -807,7 +756,7 @@ class UniqueProductState extends CommonObject
 		//if ($withpicto != 2) $result.=(($addlabel && $this->label) ? $sep . dol_trunc($this->label, ($addlabel > 1 ? $addlabel : 0)) : '');
 
 		global $action, $hookmanager;
-		$hookmanager->initHooks(array('uniqueproductstatedao'));
+		$hookmanager->initHooks(array('uniqueproductstatelinedao'));
 		$parameters = array('id'=>$this->id, 'getnomurl'=>$result);
 		$reshook = $hookmanager->executeHooks('getNomUrl', $parameters, $this, $action); // Note that $action and $object may have been modified by some hooks
 		if ($reshook > 0) $result = $hookmanager->resPrint;
@@ -842,17 +791,17 @@ class UniqueProductState extends CommonObject
 		{
 			global $langs;
 			//$langs->load("uniqueproductstate@uniqueproductstate");
-			$this->labelStatus[self::STATUS_DRAFT] = $langs->transnoentities('Draft');
-			$this->labelStatus[self::STATUS_READY] = $langs->transnoentities('Ready');
-			$this->labelStatus[self::STATUS_DONE] = $langs->transnoentities('Done');
-			$this->labelStatusShort[self::STATUS_DRAFT] = $langs->transnoentities('Draft');
-			$this->labelStatusShort[self::STATUS_READY] = $langs->transnoentities('Ready');
-			$this->labelStatusShort[self::STATUS_DONE] = $langs->transnoentities('Done');
+			$this->labelStatus[self::STATUS_DRAFT] = $langs->trans('Draft');
+			$this->labelStatus[self::STATUS_VALIDATED] = $langs->trans('Enabled');
+			$this->labelStatus[self::STATUS_CANCELED] = $langs->trans('Disabled');
+			$this->labelStatusShort[self::STATUS_DRAFT] = $langs->trans('Draft');
+			$this->labelStatusShort[self::STATUS_VALIDATED] = $langs->trans('Enabled');
+			$this->labelStatusShort[self::STATUS_CANCELED] = $langs->trans('Disabled');
 		}
 
 		$statusType = 'status'.$status;
-		//if ($status == self::STATUS_READY) $statusType = 'status1';
-		if ($status == self::STATUS_DONE) $statusType = 'status6';
+		//if ($status == self::STATUS_VALIDATED) $statusType = 'status1';
+		if ($status == self::STATUS_CANCELED) $statusType = 'status6';
 
 		return dolGetStatus($this->labelStatus[$status], $this->labelStatusShort[$status], '', $statusType, $mode);
 	}
@@ -928,8 +877,8 @@ class UniqueProductState extends CommonObject
 	{
 		$this->lines = array();
 
-		$objectline = new UniqueProductStateLine($this->db);
-		$result = $objectline->fetchAll('ASC', 'position', 0, 0, array('customsql'=>'fk_uniqueproductstate = '.$this->id));
+		$objectline = new UniqueProductStatelineLine($this->db);
+		$result = $objectline->fetchAll('ASC', 'position', 0, 0, array('customsql'=>'fk_uniqueproductstateline = '.$this->id));
 
 		if (is_numeric($result))
 		{
@@ -952,16 +901,16 @@ class UniqueProductState extends CommonObject
 		global $langs, $conf;
 		$langs->load("uniqueproductstate@uniqueproductstate");
 
-		if (empty($conf->global->UNIQUEPRODUCTSTATE_UNIQUEPRODUCTSTATE_ADDON)) {
-			$conf->global->UNIQUEPRODUCTSTATE_UNIQUEPRODUCTSTATE_ADDON = 'mod_uniqueproductstate_standard';
+		if (empty($conf->global->UNIQUEPRODUCTSTATE_UNIQUEPRODUCTSTATELINE_ADDON)) {
+			$conf->global->UNIQUEPRODUCTSTATE_UNIQUEPRODUCTSTATELINE_ADDON = 'mod_uniqueproductstateline_standard';
 		}
 
-		if (!empty($conf->global->UNIQUEPRODUCTSTATE_UNIQUEPRODUCTSTATE_ADDON))
+		if (!empty($conf->global->UNIQUEPRODUCTSTATE_UNIQUEPRODUCTSTATELINE_ADDON))
 		{
 			$mybool = false;
 
-			$file = $conf->global->UNIQUEPRODUCTSTATE_UNIQUEPRODUCTSTATE_ADDON.".php";
-			$classname = $conf->global->UNIQUEPRODUCTSTATE_UNIQUEPRODUCTSTATE_ADDON;
+			$file = $conf->global->UNIQUEPRODUCTSTATE_UNIQUEPRODUCTSTATELINE_ADDON.".php";
+			$classname = $conf->global->UNIQUEPRODUCTSTATE_UNIQUEPRODUCTSTATELINE_ADDON;
 
 			// Include file with class
 			$dirmodels = array_merge(array('/'), (array) $conf->modules_parts['models']);
@@ -1012,7 +961,7 @@ class UniqueProductState extends CommonObject
 	 *  @param      null|array  $moreparams     Array to provide more information
 	 *  @return     int         				0 if KO, 1 if OK
 	 */
-	/*public function generateDocument($modele, $outputlangs, $hidedetails = 0, $hidedesc = 0, $hideref = 0, $moreparams = null)
+	public function generateDocument($modele, $outputlangs, $hidedetails = 0, $hidedesc = 0, $hideref = 0, $moreparams = null)
 	{
 		global $conf, $langs;
 
@@ -1022,12 +971,12 @@ class UniqueProductState extends CommonObject
 		$langs->load("uniqueproductstate@uniqueproductstate");
 
 		if (!dol_strlen($modele)) {
-			$modele = 'standard_uniqueproductstate';
+			$modele = 'standard_uniqueproductstateline';
 
 			if (!empty($this->model_pdf)) {
 				$modele = $this->model_pdf;
-			} elseif (!empty($conf->global->UNIQUEPRODUCTSTATE_ADDON_PDF)) {
-				$modele = $conf->global->UNIQUEPRODUCTSTATE_ADDON_PDF;
+			} elseif (!empty($conf->global->UNIQUEPRODUCTSTATELINE_ADDON_PDF)) {
+				$modele = $conf->global->UNIQUEPRODUCTSTATELINE_ADDON_PDF;
 			}
 		}
 
@@ -1038,7 +987,7 @@ class UniqueProductState extends CommonObject
 		}
 
 		return $result;
-	}*/
+	}
 
 	/**
 	 * Action executed by scheduler
@@ -1068,5 +1017,32 @@ class UniqueProductState extends CommonObject
 		$this->db->commit();
 
 		return $error;
+	}
+}
+
+
+require_once DOL_DOCUMENT_ROOT.'/core/class/commonobjectline.class.php';
+
+/**
+ * Class UniqueProductStatelineLine. You can also remove this and generate a CRUD class for lines objects.
+ */
+class UniqueProductStatelineLine extends CommonObjectLine
+{
+	// To complete with content of an object UniqueProductStatelineLine
+	// We should have a field rowid, fk_uniqueproductstateline and position
+
+	/**
+	 * @var int  Does object support extrafields ? 0=No, 1=Yes
+	 */
+	public $isextrafieldmanaged = 0;
+
+	/**
+	 * Constructor
+	 *
+	 * @param DoliDb $db Database handler
+	 */
+	public function __construct(DoliDB $db)
+	{
+		$this->db = $db;
 	}
 }

@@ -20,6 +20,9 @@ ATMAbout = Ce module a été développé par <a href="http://www.atm-consulting.
 LinkToThirparty=Lien vers le tiers
 ListUniqueProductState=Liste des états des lieux
 NewUniqueProductState=Nouvel état des lieux
+ShippingDate=Date d'expédition
+CurrentState=Etat actuel
+NoticedState=Etat constaté
 
 # Module label 'ModuleUniqueProductStateName'
 ModuleUniqueProductStateName = Etat des lieux de produits
