@@ -165,6 +165,15 @@ if (empty($reshook))
 	{
 		$object->setProject(GETPOST('projectid', 'int'));
 	}
+	if ($action == 'setdate' && $permissiontoadd)
+	{
+		$date = dol_mktime(0, 0, 0, GETPOST('UPState_month'), GETPOST('UPState_day'), GETPOST('UPState_year'));
+
+		$result = $object->set_date($user, $date);
+		if ($result < 0) {
+			setEventMessages($object->error, $object->errors, 'errors');
+		}
+	}
 
 	if ($action == 'confirm_done' && $confirm == 'yes' && $permissiontoadd)
 	{
@@ -425,7 +434,29 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 	//$keyforbreak='fieldkeytoswitchonsecondcolumn';	// We change column just before this field
 	//unset($object->fields['fk_project']);				// Hide field already shown in banner
 	//unset($object->fields['fk_soc']);					// Hide field already shown in banner
+
+	$object->fields['date']['visible'] = 0;
+
 	include DOL_DOCUMENT_ROOT.'/core/tpl/commonfields_view.tpl.php';
+	print '<tr><td>';
+	$editenable = $permissiontoadd && $object->statut == UniqueProductState::STATUS_DRAFT;
+	print $form->editfieldkey("Date", 'date', '', $object, $editenable);
+	print '</td><td>';
+	if ($action == 'editdate') {
+		print '<form name="setdate" action="'.$_SERVER["PHP_SELF"].'?id='.$object->id.'" method="post">';
+		print '<input type="hidden" name="token" value="'.newToken().'">';
+		print '<input type="hidden" name="action" value="setdate">';
+		print $form->selectDate($object->date, 'UPState_', '', '', '', "setdate");
+		print '<input type="submit" class="button" value="'.$langs->trans('Modify').'">';
+		print '</form>';
+	} else {
+		print $object->date ? dol_print_date($object->date, 'day') : '&nbsp;';
+		if ($object->date < dol_now() && $object->status < UniqueProductState::STATUS_DONE) {
+			print ' '.img_picto($langs->trans("Late"), "warning");
+		}
+	}
+	print '</td>';
+	print '</tr>';
 
 	// Other attributes. Fields from hook formObjectOptions and Extrafields.
 	include DOL_DOCUMENT_ROOT.'/core/tpl/extrafields_view.tpl.php';

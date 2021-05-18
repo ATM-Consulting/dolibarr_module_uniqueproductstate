@@ -703,6 +703,24 @@ class UniqueProductState extends CommonObject
 	}
 
 	/**
+	 *	Set the UPState date
+	 *
+	 *	@param      User	$user       Object user making change
+	 *	@param      int		$date		Date
+	 * 	@param     	int		$notrigger	1=Does not execute triggers, 0= execute triggers
+	 *	@return     int         		<0 if KO, >0 if OK
+	 */
+	public function set_date($user, $date, $notrigger = 0)
+	{
+		if ($user->rights->uniqueproductstate->uniqueproductstate->write && !empty($date))
+		{
+			$this->date=$date;
+			return $this->update($user, $notrigger);
+		}
+		return -1;
+	}
+
+	/**
 	 *  Return a link to the object card (with optionaly the picto)
 	 *
 	 *  @param  int     $withpicto                  Include picto in link (0=No picto, 1=Include picto into link, 2=Only picto)
