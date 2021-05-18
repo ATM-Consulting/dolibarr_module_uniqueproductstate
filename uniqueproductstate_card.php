@@ -61,7 +61,9 @@ if (!$res) die("Include of main fails");
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.formfile.class.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.formprojet.class.php';
+require_once DOL_DOCUMENT_ROOT.'/product/class/product.class.php';
 dol_include_once('/uniqueproductstate/class/uniqueproductstate.class.php');
+dol_include_once('/uniqueproductstate/class/uniqueproductstateline.class.php');
 dol_include_once('/uniqueproductstate/lib/uniqueproductstate_uniqueproductstate.lib.php');
 
 // Load translation files required by the page
@@ -74,12 +76,15 @@ $action = GETPOST('action', 'aZ09');
 $confirm    = GETPOST('confirm', 'alpha');
 $cancel     = GETPOST('cancel', 'aZ09');
 $contextpage = GETPOST('contextpage', 'aZ') ?GETPOST('contextpage', 'aZ') : 'uniqueproductstatecard'; // To manage different context of search
+$fk_soc = GETPOST('fk_soc', 'int');
 $backtopage = GETPOST('backtopage', 'alpha');
 $backtopageforcancel = GETPOST('backtopageforcancel', 'alpha');
 //$lineid   = GETPOST('lineid', 'int');
 
 // Initialize technical objects
 $object = new UniqueProductState($db);
+$objectline = new UniqueProductStateline($db);
+
 $extrafields = new ExtraFields($db);
 $diroutputmassaction = $conf->uniqueproductstate->dir_output.'/temp/massgeneration/'.$user->id;
 $hookmanager->initHooks(array('uniqueproductstatecard', 'globalcard')); // Note that conf->hooks_modules contains array
@@ -141,6 +146,70 @@ if (empty($reshook))
 	}
 
 	$triggermodname = 'UNIQUEPRODUCTSTATE_UNIQUEPRODUCTSTATE_MODIFY'; // Name of trigger action code to execute when we modify record
+
+	if ($action == 'add' && !empty($permissiontoadd))
+	{
+		// SELECT t.rowid, t.batch, t.fk_product, t.entity, t.sellby, t.eatby, t.datec, t.tms, t.fk_user_creat, t.fk_user_modif, ef.month_amort as options_month_amort, ef.conditionnement as options_conditionnement, ef.prix1 as options_prix1, ef.ecopart1 as options_ecopart1, ef.plt as options_plt, ef.ameublys_fk_soc as options_ameublys_fk_soc, ef.UPState_fk_soc as options_UPState_fk_soc, ef.status as options_status
+		// FROM llx_product_lot as t
+		// LEFT JOIN llx_product_lot_extrafields as ef on (t.rowid = ef.fk_object)
+		// WHERE t.entity IN (1)
+		// AND (ef.ameublys_fk_soc IN (2290))
+		// ORDER BY t.rowid ASC
+		// TODO Trouver quel champs de l'expedition est garni à l'expédition... et l'ajouter à la requête
+		$sql = "SELECT t.rowid, t.batch, t.fk_product, ef.status as options_status";
+		//$sql.= ", ef.UPState_fk_soc as options_UPState_fk_soc";
+		$sql.= ", ef.ameublys_fk_soc as options_UPState_fk_soc"; // TODO script pour migrer les donner de l'ef spé vers l'ef créé par le module
+		$sql.= " FROM ".MAIN_DB_PREFIX."product_lot as t";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."product_lot_extrafields as ef on (t.rowid = ef.fk_object)";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."expeditiondet_batch as edb on edb.batch = t.batch";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."expeditiondet as ed on ed.rowid = edb.fk_expeditiondet";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."commandedet as cd on cd.rowid = ed.fk_origin_line AND cd.fk_product = t.fk_product";
+		$sql.= " WHERE t.entity = ".$conf->entity;
+		// TODO script pour migrer les donner de l'ef spé vers l'ef créé par le module
+//		$sql.= " AND ef.UPState_fk_soc = ".$fk_soc;
+		$sql.= " AND ef.ameublys_fk_soc = ".$fk_soc;
+
+//		print $sql;
+
+		$resql = $db->query($sql);
+		if ($resql)
+		{
+			$num = $db->num_rows($resql);
+			if ($num)
+			{
+				$TProdCache=array();
+				$object->lines = array();
+				while ($obj = $db->fetch_object($resql))
+				{
+					if (!array_key_exists($obj->fk_product,$TProdCache))
+					{
+						$prod = new Product($db);
+						$res = $prod->fetch($obj->fk_product);
+						if ($res > 0)
+						{
+							$TProdCache[$prod->id] = $prod->ref;
+						}
+					}
+
+					$objectline = new UniqueProductStateline($db);
+					$objectline->fk_product = $obj->fk_product;
+					$objectline->product_ref = $TProdCache[$obj->fk_product];
+					$objectline->serial_number = $obj->batch;
+					// $objectline->shipping_date = ''; on verra plus tard du coup
+					$objectline->fk_current_state = $obj->options_status;
+					$objectline->fk_noticed_state = -1;
+
+					$object->lines[] = $objectline;
+				}
+			}
+			else
+			{
+				// setEventMessage pas de produit sérialisé chez le client demandé
+			}
+		}
+
+//		exit;
+	}
 
 	// Actions cancel, add, update, update_extras, confirm_validate, confirm_delete, confirm_deleteline, confirm_clone, confirm_close, confirm_setdraft, confirm_reopen
 	include DOL_DOCUMENT_ROOT.'/core/actions_addupdatedelete.inc.php';
