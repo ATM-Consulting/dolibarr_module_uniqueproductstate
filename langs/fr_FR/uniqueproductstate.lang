@@ -67,6 +67,7 @@ uniqueproductstate_delete=Supprimer un état des lieux de produits sérialisés
 UPStateNew=Neuf
 UPStateStriped=Rayé
 UPStateSecondHand=Occasion
+ChangeStateTo=Changer l'état vers
 
 #
 # Status for uniqueProductState

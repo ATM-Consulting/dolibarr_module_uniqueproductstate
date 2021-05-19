@@ -130,42 +130,6 @@ class UniqueProductStateline extends CommonObject
 	// END MODULEBUILDER PROPERTIES
 
 
-	// If this object has a subtable with lines
-
-	// /**
-	//  * @var string    Name of subtable line
-	//  */
-	// public $table_element_line = 'uniqueproductstate_uniqueproductstatelineline';
-
-	// /**
-	//  * @var string    Field with ID of parent key if this object has a parent
-	//  */
-	// public $fk_element = 'fk_uniqueproductstateline';
-
-	// /**
-	//  * @var string    Name of subtable class that manage subtable lines
-	//  */
-	// public $class_element_line = 'UniqueProductStatelineline';
-
-	// /**
-	//  * @var array	List of child tables. To test if we can delete object.
-	//  */
-	// protected $childtables = array();
-
-	// /**
-	//  * @var array    List of child tables. To know object to delete on cascade.
-	//  *               If name matches '@ClassNAme:FilePathClass;ParentFkFieldName' it will
-	//  *               call method deleteByParentField(parentId, ParentFkFieldName) to fetch and delete child object
-	//  */
-	// protected $childtablesoncascade = array('uniqueproductstate_uniqueproductstatelinedet');
-
-	// /**
-	//  * @var UniqueProductStatelineLine[]     Array of subtable lines
-	//  */
-	// public $lines = array();
-
-
-
 	/**
 	 * Constructor
 	 *
@@ -951,98 +915,35 @@ class UniqueProductStateline extends CommonObject
 	}
 
 	/**
-	 *  Create a document onto disk according to template module.
+	 * print line state
 	 *
-	 *  @param	    string		$modele			Force template to use ('' to not force)
-	 *  @param		Translate	$outputlangs	objet lang a utiliser pour traduction
-	 *  @param      int			$hidedetails    Hide details of lines
-	 *  @param      int			$hidedesc       Hide description
-	 *  @param      int			$hideref        Hide ref
-	 *  @param      null|array  $moreparams     Array to provide more information
-	 *  @return     int         				0 if KO, 1 if OK
+	 * @param string $selectedState
 	 */
-	public function generateDocument($modele, $outputlangs, $hidedetails = 0, $hidedesc = 0, $hideref = 0, $moreparams = null)
+	public function printState($selectedState = "current")
 	{
-		global $conf, $langs;
+		include_once DOL_DOCUMENT_ROOT.'/core/class/extrafields.class.php';
+		$extrafields = new ExtraFields($this->db);
+		$extrafields->fetch_name_optionals_label('product_lot');
+		$TAvailableState = $extrafields->attributes['product_lot']['param']['status']['options'];
 
-		$result = 0;
-		$includedocgeneration = 0;
+		$field = 'fk_'.$selectedState.'_state';
 
-		$langs->load("uniqueproductstate@uniqueproductstate");
+		if (array_key_exists($this->{$field}, $TAvailableState)) print $TAvailableState[$this->{$field}];
 
-		if (!dol_strlen($modele)) {
-			$modele = 'standard_uniqueproductstateline';
-
-			if (!empty($this->model_pdf)) {
-				$modele = $this->model_pdf;
-			} elseif (!empty($conf->global->UNIQUEPRODUCTSTATELINE_ADDON_PDF)) {
-				$modele = $conf->global->UNIQUEPRODUCTSTATELINE_ADDON_PDF;
-			}
-		}
-
-		$modelpath = "core/modules/uniqueproductstate/doc/";
-
-		if ($includedocgeneration && !empty($modele)) {
-			$result = $this->commonGenerateDocument($modelpath, $modele, $outputlangs, $hidedetails, $hidedesc, $hideref, $moreparams);
-		}
-
-		return $result;
+		print '';
 	}
 
-	/**
-	 * Action executed by scheduler
-	 * CAN BE A CRON TASK. In such a case, parameters come from the schedule job setup field 'Parameters'
-	 * Use public function doScheduledJob($param1, $param2, ...) to get parameters
-	 *
-	 * @return	int			0 if OK, <>0 if KO (this function is used also by cron so only 0 is OK)
-	 */
-	public function doScheduledJob()
+	public function getStateSelect($selectedState = "noticed")
 	{
-		global $conf, $langs;
+		global $form;
 
-		//$conf->global->SYSLOG_FILE = 'DOL_DATA_ROOT/dolibarr_mydedicatedlofile.log';
+		include_once DOL_DOCUMENT_ROOT.'/core/class/extrafields.class.php';
+		$extrafields = new ExtraFields($this->db);
+		$extrafields->fetch_name_optionals_label('product_lot');
+		$TAvailableState = $extrafields->attributes['product_lot']['param']['status']['options'];
 
-		$error = 0;
-		$this->output = '';
-		$this->error = '';
+		$field = 'fk_'.$selectedState.'_state';
 
-		dol_syslog(__METHOD__, LOG_DEBUG);
-
-		$now = dol_now();
-
-		$this->db->begin();
-
-		// ...
-
-		$this->db->commit();
-
-		return $error;
-	}
-}
-
-
-require_once DOL_DOCUMENT_ROOT.'/core/class/commonobjectline.class.php';
-
-/**
- * Class UniqueProductStatelineLine. You can also remove this and generate a CRUD class for lines objects.
- */
-class UniqueProductStatelineLine extends CommonObjectLine
-{
-	// To complete with content of an object UniqueProductStatelineLine
-	// We should have a field rowid, fk_uniqueproductstateline and position
-
-	/**
-	 * @var int  Does object support extrafields ? 0=No, 1=Yes
-	 */
-	public $isextrafieldmanaged = 0;
-
-	/**
-	 * Constructor
-	 *
-	 * @param DoliDb $db Database handler
-	 */
-	public function __construct(DoliDB $db)
-	{
-		$this->db = $db;
+		return $form->selectArray($field, $TAvailableState, $this->{$field}, 1);
 	}
 }

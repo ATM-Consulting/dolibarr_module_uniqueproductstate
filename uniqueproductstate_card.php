@@ -62,12 +62,13 @@ require_once DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.formfile.class.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.formprojet.class.php';
 require_once DOL_DOCUMENT_ROOT.'/product/class/product.class.php';
+require_once DOL_DOCUMENT_ROOT.'/product/stock/class/productlot.class.php';
 dol_include_once('/uniqueproductstate/class/uniqueproductstate.class.php');
 dol_include_once('/uniqueproductstate/class/uniqueproductstateline.class.php');
 dol_include_once('/uniqueproductstate/lib/uniqueproductstate_uniqueproductstate.lib.php');
 
 // Load translation files required by the page
-$langs->loadLangs(array("uniqueproductstate@uniqueproductstate", "other"));
+$langs->loadLangs(array("uniqueproductstate@uniqueproductstate", "productbatch", "other"));
 
 // Get parameters
 $id = GETPOST('id', 'int');
@@ -79,7 +80,7 @@ $contextpage = GETPOST('contextpage', 'aZ') ?GETPOST('contextpage', 'aZ') : 'uni
 $fk_soc = GETPOST('fk_soc', 'int');
 $backtopage = GETPOST('backtopage', 'alpha');
 $backtopageforcancel = GETPOST('backtopageforcancel', 'alpha');
-//$lineid   = GETPOST('lineid', 'int');
+$lineid   = GETPOST('lineid', 'int');
 
 // Initialize technical objects
 $object = new UniqueProductState($db);
@@ -225,6 +226,13 @@ if (empty($reshook))
 
 	// Action to build doc
 	include DOL_DOCUMENT_ROOT.'/core/actions_builddoc.inc.php';
+
+	if ($action == 'updateline' && $permissiontoadd)
+	{
+		$triggermodname = "UNIQUEPRODUCTSTATElINE_MODIFY";
+		$objectline->fetch($lineid);
+		$objectline->setValueFrom('fk_noticed_state', GETPOST('fk_noticed_state', 'int'), '', '', '', '', $user, $triggermodname);
+	}
 
 	if ($action == 'set_thirdparty' && $permissiontoadd)
 	{
@@ -398,7 +406,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"].'?id='.$object->id, $langs->trans('DeleteUniqueProductState'), $langs->trans('ConfirmDeleteObject'), 'confirm_delete', '', 0, 1);
 	}
 	// Confirmation to delete line
-	if ($action == 'deleteline') {
+	if ($action == 'ask_deleteline') {
 		$formconfirm = $form->formconfirm($_SERVER["PHP_SELF"].'?id='.$object->id.'&lineid='.$lineid, $langs->trans('DeleteLine'), $langs->trans('ConfirmDeleteLine'), 'confirm_deleteline', '', 0, 1);
 	}
 	// Clone confirmation
@@ -567,7 +575,10 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 
 		if (!empty($object->lines))
 		{
-			$object->printObjectLines($action, $mysoc, null, GETPOST('lineid', 'int'), 1);
+			$tmpdir = dol_buildpath('uniqueproductstate/tpl');
+			$defaulttpldir = substr($tmpdir, strrpos($tmpdir,'htdocs')+6);
+
+			$object->printObjectLines($action, $mysoc, null, GETPOST('lineid', 'int'), 1, $defaulttpldir);
 		}
 
 		// Form to add new line

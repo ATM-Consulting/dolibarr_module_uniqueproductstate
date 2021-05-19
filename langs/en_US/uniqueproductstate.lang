@@ -72,3 +72,4 @@ uniqueproductstate_delete=Delete objects of UniqueProductState
 UPStateNew=New
 UPStateStriped=Striped
 UPStateSecondHand=Second hand
+ChangeStateTo=Change state to
