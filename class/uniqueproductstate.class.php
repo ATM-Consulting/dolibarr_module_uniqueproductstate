@@ -929,7 +929,7 @@ class UniqueProductState extends CommonObject
 		$this->lines = array();
 
 		$objectline = new UniqueProductStateLine($this->db);
-		$result = $objectline->fetchAll('ASC', 'position', 0, 0, array('customsql'=>'fk_uniqueproductstate = '.$this->id));
+		$result = $objectline->fetchAll('ASC', '', 0, 0, array('customsql'=>'fk_uniqueproductstate = '.$this->id));
 
 		if (is_numeric($result))
 		{
