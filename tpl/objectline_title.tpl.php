@@ -32,6 +32,7 @@
  *
  * $type, $text, $description, $line
  */
+global $id;
 
 // Protection to avoid direct call of template
 if (empty($object) || !is_object($object))
@@ -63,8 +64,8 @@ print '<td class="linecolcurrentstate nowrap center" style="width: 80px">'.$lang
 // noticed state
 print '<td class="linecolnoticedstate nowrap center" style="width: 80px">';
 print '<span id="noticedstatetitle">'.$langs->trans('NoticedState').'</span>';
-print '<span id="changeNoticedState" style="display:none;">'.$langs->trans('ChangeStateTo').' : '.$objectline->getStateSelect();
-print '<button id="submitChange"></button>';
+print '<span id="changeNoticedState" style="display:none;">'.$langs->trans('ChangeStateTo').' : <br>'.$objectline->getStateSelect();
+print '<button id="submitChange">&nbsp;'.$langs->trans('Apply').'</button>';
 print '</span></td>';
 
 if ($object->status == 0 && $action != 'editline')
@@ -127,6 +128,35 @@ if ($object->status == 1 && $action != 'editline')
 					noticedstatetitle.show();
 					changeNoticedState.hide();
 				}
+			});
+
+			$("#submitChange").click(function (e) {
+				e.preventDefault();
+
+				var checkedBox = $('input[type="checkbox"]:checked.linecheckbox');
+				var Tline = [];
+				checkedBox.each(function () {
+					Tline.push($(this).val());
+				});
+				var value = $('#fk_noticed_state').val();
+
+				// console.log(value, Tline, checkedBox);
+
+				if (Tline.length > 0)
+				{
+					$.ajax({
+						url: "<?php echo dol_buildpath('uniqueproductstate/scripts/interface.php',1) ?>"
+						,data: {
+							put: 'changeLineState'
+							,Tlineid: Tline
+							,value: value
+						}
+					}).done(function (data){
+						console.log(data);
+						document.location.href = "<?php echo dol_buildpath('uniqueproductstate/uniqueproductstate_card.php',1).'?id='.$id ?>"
+					});
+				}
+
 			});
 		});
 	</script>
