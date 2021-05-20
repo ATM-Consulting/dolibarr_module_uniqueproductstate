@@ -67,7 +67,7 @@ $coldisplay = 0;
 	if ($line->fk_product > 0)
 	{
 		$line->fetch_product();
-		print $line->product->getNomUrl(1);
+		print $line->product->getNomUrl(1) . ' - '.$line->product->label;
 	}
 	print '</td>';
 
@@ -80,7 +80,7 @@ $coldisplay = 0;
 	print '</td>';
 
 	// shipping date
-	print '<td class="linecoldate nowrap center">&nbsp;</td>';
+	print '<td class="linecoldate nowrap center">'.dol_print_date($line->shipping_date).'</td>';
 	$coldisplay++;
 
 	// current state

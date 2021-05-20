@@ -451,6 +451,13 @@ class UniqueProductState extends CommonObject
 	 */
 	public function delete(User $user, $notrigger = false)
 	{
+		$this->getLinesArray();
+
+		if (!empty($this->lines))
+		{
+			foreach ($this->lines as $line) $line->delete($user, $notrigger);
+		}
+
 		return $this->deleteCommon($user, $notrigger);
 		//return $this->deleteCommon($user, $notrigger, 1);
 	}
@@ -999,6 +1006,46 @@ class UniqueProductState extends CommonObject
 			print $langs->trans("ErrorNumberingModuleNotSetup", $this->element);
 			return "";
 		}
+	}
+
+
+	public function getProductToAddSelect()
+	{
+		if (empty($this->lines)) $this->getLinesArray();
+
+		$resql = $this->getProductToAdd($this->fk_soc);
+//		print_r($this->db->lastquery); exit;
+	}
+
+	public function getProductToAdd($fk_soc, $sqlFilter = '')
+	{
+		global $conf;
+
+		if (empty($this->lines)) $this->getLinesArray();
+
+		// TODO Trouver quel champs de l'expedition est garni à l'expédition... et l'ajouter à la requête
+		$sql = "SELECT t.rowid, t.batch, t.fk_product, ef.status as options_status, e.date_valid as shipping_date, ed.rowid as shipping_line_id";
+		//$sql.= ", ef.UPState_fk_soc as options_UPState_fk_soc";
+		$sql.= ", ef.ameublys_fk_soc as options_UPState_fk_soc"; // TODO script pour migrer les donner de l'ef spé vers l'ef créé par le module
+		$sql.= " FROM ".MAIN_DB_PREFIX."product_lot as t";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."product_lot_extrafields as ef on (t.rowid = ef.fk_object)";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."expeditiondet_batch as edb on edb.batch = t.batch";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."expeditiondet as ed on ed.rowid = edb.fk_expeditiondet";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."expedition AS e ON e.rowid = ed.fk_expedition";
+		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."commandedet as cd on cd.rowid = ed.fk_origin_line AND cd.fk_product = t.fk_product";
+		$sql.= " WHERE t.entity = ".$conf->entity;
+		// TODO script pour migrer les donner de l'ef spé vers l'ef créé par le module
+//		$sql.= " AND ef.UPState_fk_soc = ".$fk_soc;
+		$sql.= " AND ef.ameublys_fk_soc = ".$fk_soc;
+
+		if (!empty($sqlFilter))
+		{
+			$sql.= $sqlFilter;
+		}
+
+//		print $sql; exit;
+
+		return $this->db->query($sql);
 	}
 
 	/**

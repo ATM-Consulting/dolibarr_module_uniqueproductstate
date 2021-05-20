@@ -76,20 +76,20 @@ $coldisplay++;
 	// ref product
 	if ($line->fk_product > 0) {
 		$line->fetch_product();
-		print $line->product->getNomUrl(1).'<br><br>';
+		print $line->product->getNomUrl(1) . ' - '.$line->product->label.'<br><br>';
 	}
 	print '</td>';
 
 	// serial number
 	$productLot = new Productlot($line->db);
 	$res = $productLot->fetch(0, $line->fk_product, $line->serial_number);
-	print '<td class="linecolsn nowrap center" style="width: 80px">';
+	print '<td class="linecolsn nowrap" style="width: 80px">';
 	if ($res > 0) print $productLot->getNomUrl(1);
 	$coldisplay++;
 	print '</td>';
 
 	// shipping date
-	print '<td class="linecoldate nowrap center">&nbsp;</td>';
+	print '<td class="linecoldate nowrap center">'.dol_print_date($line->shipping_date).'</td>';
 	$coldisplay++;
 
 	// current state

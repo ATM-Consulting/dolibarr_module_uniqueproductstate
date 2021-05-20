@@ -150,29 +150,7 @@ if (empty($reshook))
 
 	if ($action == 'add' && !empty($permissiontoadd))
 	{
-		// SELECT t.rowid, t.batch, t.fk_product, t.entity, t.sellby, t.eatby, t.datec, t.tms, t.fk_user_creat, t.fk_user_modif, ef.month_amort as options_month_amort, ef.conditionnement as options_conditionnement, ef.prix1 as options_prix1, ef.ecopart1 as options_ecopart1, ef.plt as options_plt, ef.ameublys_fk_soc as options_ameublys_fk_soc, ef.UPState_fk_soc as options_UPState_fk_soc, ef.status as options_status
-		// FROM llx_product_lot as t
-		// LEFT JOIN llx_product_lot_extrafields as ef on (t.rowid = ef.fk_object)
-		// WHERE t.entity IN (1)
-		// AND (ef.ameublys_fk_soc IN (2290))
-		// ORDER BY t.rowid ASC
-		// TODO Trouver quel champs de l'expedition est garni à l'expédition... et l'ajouter à la requête
-		$sql = "SELECT t.rowid, t.batch, t.fk_product, ef.status as options_status";
-		//$sql.= ", ef.UPState_fk_soc as options_UPState_fk_soc";
-		$sql.= ", ef.ameublys_fk_soc as options_UPState_fk_soc"; // TODO script pour migrer les donner de l'ef spé vers l'ef créé par le module
-		$sql.= " FROM ".MAIN_DB_PREFIX."product_lot as t";
-		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."product_lot_extrafields as ef on (t.rowid = ef.fk_object)";
-		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."expeditiondet_batch as edb on edb.batch = t.batch";
-		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."expeditiondet as ed on ed.rowid = edb.fk_expeditiondet";
-		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."commandedet as cd on cd.rowid = ed.fk_origin_line AND cd.fk_product = t.fk_product";
-		$sql.= " WHERE t.entity = ".$conf->entity;
-		// TODO script pour migrer les donner de l'ef spé vers l'ef créé par le module
-//		$sql.= " AND ef.UPState_fk_soc = ".$fk_soc;
-		$sql.= " AND ef.ameublys_fk_soc = ".$fk_soc;
-
-//		print $sql;
-
-		$resql = $db->query($sql);
+		$resql = $object->getProductToAdd($fk_soc);
 		if ($resql)
 		{
 			$num = $db->num_rows($resql);
@@ -191,12 +169,12 @@ if (empty($reshook))
 							$TProdCache[$prod->id] = $prod->ref;
 						}
 					}
-
+//var_dump($obj->shipping_date); exit;
 					$objectline = new UniqueProductStateline($db);
 					$objectline->fk_product = $obj->fk_product;
 					$objectline->product_ref = $TProdCache[$obj->fk_product];
 					$objectline->serial_number = $obj->batch;
-					// $objectline->shipping_date = ''; on verra plus tard du coup
+					$objectline->shipping_date = strtotime($obj->shipping_date);
 					$objectline->fk_current_state = $obj->options_status;
 					$objectline->fk_noticed_state = -1;
 
@@ -586,8 +564,11 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		{
 			if ($action != 'editline')
 			{
+				$tmpdir = dol_buildpath('uniqueproductstate/tpl');
+				$defaulttpldir = substr($tmpdir, strrpos($tmpdir,'htdocs')+6);
+
 				// Add products/services form
-				$object->formAddObjectLine(1, $mysoc, $soc);
+				$object->formAddObjectLine(1, $mysoc, $soc, $defaulttpldir);
 
 				$parameters = array();
 				$reshook = $hookmanager->executeHooks('formAddObjectLine', $parameters, $object, $action); // Note that $action and $object may have been modified by hook
