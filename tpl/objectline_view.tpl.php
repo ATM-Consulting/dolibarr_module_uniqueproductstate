@@ -96,7 +96,7 @@ $coldisplay = 0;
 	$coldisplay++;
 
 
-if ($object->status == 0 && ($user->rights->uniqueproductstate->uniqueproductstate->write) && $action != 'editline') {
+if ($object->status < 2 && ($user->rights->uniqueproductstate->uniqueproductstate->write) && $action != 'editline') {
 	print '<td class="linecoledit center">';
 	$coldisplay++;
 	?>
@@ -107,7 +107,7 @@ if ($object->status == 0 && ($user->rights->uniqueproductstate->uniqueproductsta
 
 	print '<td class="linecoldelete center">';
 	$coldisplay++;
-	if (($line->fk_prev_id == null) && empty($disableremove)) { //La suppression n'est autorisée que si il n'y a pas de ligne dans une précédente situation
+	if (($line->fk_prev_id == null) && empty($disableremove) && $object->status == 0) { //La suppression n'est autorisée que si il n'y a pas de ligne dans une précédente situation
 		print '<a class="reposition" href="'.$_SERVER["PHP_SELF"].'?id='.$this->id.'&amp;action=ask_deleteline&amp;lineid='.$line->id.'">';
 		print img_delete();
 		print '</a>';
