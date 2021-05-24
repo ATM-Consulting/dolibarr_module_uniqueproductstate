@@ -1011,10 +1011,73 @@ class UniqueProductState extends CommonObject
 
 	public function getProductToAddSelect()
 	{
+		global $form, $langs;
+
 		if (empty($this->lines)) $this->getLinesArray();
 
+		$TProdIncluded = $TToInclude= array();
+		$out = '';
+
+		if (!empty($this->lines))
+		{
+			foreach ($this->lines as $line) {
+				if (!array_key_exists($line->fk_product, $TProdIncluded))
+				{
+					$TProdIncluded[$line->fk_product] = array();
+				}
+
+				if (!array_key_exists($line->serial_number, $TProdIncluded[$line->fk_product]))
+				{
+					$TProdIncluded[$line->fk_product][$line->serial_number] = array();
+				}
+
+				$TProdIncluded[$line->fk_product][$line->serial_number][] = $line->shipping_date;
+			}
+		}
+
 		$resql = $this->getProductToAdd($this->fk_soc);
-//		print_r($this->db->lastquery); exit;
+
+		if ($resql)
+		{
+			while ($obj = $this->db->fetch_object($resql))
+			{
+				$shippingdate = strtotime($obj->shipping_date);
+				if ($shippingdate == false) $shippingdate = '';
+
+				if (! in_array($shippingdate, $TProdIncluded[$obj->fk_product][$obj->batch]))
+				{
+					$TToInclude[$obj->fk_product]['label'] = $obj->fk_product. ' : ' . $obj->batch;
+					$TToInclude[$obj->fk_product]['data-fk_product'] = $obj->fk_product;
+					$TToInclude[$obj->fk_product]['data-batch'] = $obj->batch;
+					$TToInclude[$obj->fk_product]['data-shipping_date'] = $obj->shipping_date;
+					$TToInclude[$obj->fk_product]['data-current_state'] = $obj->option_status;
+				}
+			}
+		}
+
+		if (!empty($TToInclude))
+		{
+			$out.= $form->selectArray('prodToadd', $TToInclude, '', 1);
+			$out.= '<script>$(document).ready(function () {
+    		$("#prodToadd").on("change", function (e) {
+				   $("#fk_product").val($("#prodToadd option:selected").data("fk_product"))
+				   $("#batch").val($("#prodToadd option:selected").data("batch"))
+				   $("#shipping_date").val($("#prodToadd option:selected").data("shipping_date"))
+				   $("#current_state").val($("#prodToadd option:selected").data("current_state"))
+				});
+			});</script>';
+
+		}
+		else
+		{
+			$out.= $langs->trans('NoProductToAdd');
+			$out.= '<script>$(document).ready(function () {
+    			$("#addline").hide();
+			});</script>';
+		}
+
+		return $out;
+
 	}
 
 	public function getProductToAdd($fk_soc, $sqlFilter = '')

@@ -205,6 +205,30 @@ if (empty($reshook))
 	// Action to build doc
 	include DOL_DOCUMENT_ROOT.'/core/actions_builddoc.inc.php';
 
+	if ($action == 'addline' && $permissiontoadd)
+	{
+		$fk_product = GETPOST('fk_product', 'int');
+		if ($fk_product > 0)
+		{
+			$batch = GETPOST('batch', 'alpha');
+			$shipping_date = GETPOST('shipping_date', 'alpha');
+			$current_state = GETPOST('current_state', 'int');
+
+			$objectline = new UniqueProductStateline($db);
+
+			$objectline->fk_uniqueproductstate = $id;
+			$objectline->fk_product = $fk_product;
+			$objectline->fetch_product();
+			$objectline->product_ref = $objectline->product->ref;
+			$objectline->serial_number = $batch;
+			$objectline->shipping_date = strtotime($shipping_date);
+			$objectline->fk_current_state = $current_state;
+			$objectline->fk_noticed_state = -1;
+
+			$ret = $objectline->create($user);
+		}
+	}
+
 	if ($action == 'updateline' && $permissiontoadd)
 	{
 		$triggermodname = "UNIQUEPRODUCTSTATElINE_MODIFY";

@@ -23,6 +23,7 @@ NewUniqueProductState=Nouvel état des lieux
 ShippingDate=Date d'expédition
 CurrentState=Etat actuel
 NoticedState=Etat constaté
+NoProductToAdd=Aucun produit à ajouter pour ce tiers
 
 # Module label 'ModuleUniqueProductStateName'
 ModuleUniqueProductStateName = Etat des lieux de produits

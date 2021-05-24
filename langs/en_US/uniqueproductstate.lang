@@ -23,6 +23,7 @@ NewUniqueProductState=New Unique Products States
 ShippingDate=Shipping date
 CurrentState=Current state
 NoticedState=Noticed state
+NoProductToAdd=No product to add for this thirdparty
 
 # Module label 'ModuleUniqueProductStateName'
 ModuleUniqueProductStateName = UniqueProductState

@@ -106,9 +106,9 @@ if ($nolinesbefore) {
 
 		<?php
 
-		$this->getProductToAddSelect();
+		print $this->getProductToAddSelect();
 
-		// Editor wysiwyg
+		/*// Editor wysiwyg
 		require_once DOL_DOCUMENT_ROOT.'/core/class/doleditor.class.php';
 		$nbrows = ROWS_2;
 		$enabled = (!empty($conf->global->FCKEDITOR_ENABLE_DETAILS) ? $conf->global->FCKEDITOR_ENABLE_DETAILS : 0);
@@ -116,9 +116,14 @@ if ($nolinesbefore) {
 		$toolbarname = 'dolibarr_details';
 		if (!empty($conf->global->FCKEDITOR_ENABLE_DETAILS_FULL)) $toolbarname = 'dolibarr_notes';
 		$doleditor = new DolEditor('dp_desc', GETPOST('dp_desc', 'restricthtml'), '', (empty($conf->global->MAIN_DOLEDITOR_HEIGHT) ? 100 : $conf->global->MAIN_DOLEDITOR_HEIGHT), $toolbarname, '', false, true, $enabled, $nbrows, '98%');
-		$doleditor->Create();
+		$doleditor->Create();*/
 
 		?>
+		<input type="hidden" name="fk_product" id="fk_product">
+		<input type="hidden" name="batch" id="batch">
+		<input type="hidden" name="shipping_date" id="shipping_date">
+		<input type="hidden" name="current_state" id="current_state">
+		<input type="hidden" name="noticed_state" id="noticed_state" value="-1">
 	</td>
 
 	<td class="linecolsn nowrap" style="width: 80px">&nbsp;</td>
