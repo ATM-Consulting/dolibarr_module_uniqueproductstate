@@ -455,6 +455,9 @@ class UniqueProductState extends CommonObject
 
 		if (!empty($this->lines))
 		{
+			// reupdate product_lot status
+			if ($this->status == self::STATUS_DONE) $ret = $this->updateProductLot(self::STATUS_READY);
+
 			foreach ($this->lines as $line) $line->delete($user, $notrigger);
 		}
 
@@ -657,7 +660,66 @@ class UniqueProductState extends CommonObject
 			return -1;
 		}
 
-		return $this->setStatusCommon($user, self::STATUS_DONE, $notrigger, 'UNIQUEPRODUCTSTATE_CLOSE');
+		$ret = $this->updateProductLot(self::STATUS_DONE);
+		if ($ret > 0) return $this->setStatusCommon($user, self::STATUS_DONE, $notrigger, 'UNIQUEPRODUCTSTATE_CLOSE');
+		else return $ret;
+	}
+
+	/**
+	 * Save status on product_lot on status change
+	 * @param int $toStatus
+	 * @return int
+	 */
+	public function updateProductLot(int $toStatus)
+	{
+		global $user;
+
+		$ret = 1;
+		$saveCurrent = false;
+		$valueForCurrentState = 'fk_noticed_state';
+
+		switch ($toStatus)
+		{
+			case self::STATUS_DONE:
+				$saveCurrent = true;
+				break;
+
+			case self::STATUS_READY:
+				$valueForCurrentState = 'fk_current_state';
+				break;
+
+			default:
+				break;
+		}
+
+		if (empty($this->lines)) $this->getLinesArray();
+		if (empty($this->lines)) return -1;
+
+		foreach ($this->lines as $line)
+		{
+			$productLot = new Productlot($line->db);
+			$res = $productLot->fetch(0, $line->fk_product, $line->serial_number);
+			if ($res > 0)
+			{
+				$resupd = 1;
+				if ($saveCurrent)
+				{
+					$line->fk_current_state = $productLot->array_options['options_status'];
+					$resupd = $line->update($user);
+				}
+
+				if ($resupd > 0)
+				{
+					$productLot->array_options['options_status'] = $line->{$valueForCurrentState};
+					$productLot->insertExtraFields();
+				}
+
+//				var_dump($line->{$valueForCurrentState}, $productLot);
+//				exit;
+			}
+		}
+
+		return $ret;
 	}
 
 	/**
@@ -707,7 +769,9 @@ class UniqueProductState extends CommonObject
 			return -1;
 		}
 
-		return $this->setStatusCommon($user, self::STATUS_READY, $notrigger, 'UNIQUEPRODUCTSTATE_REOPEN');
+		$ret = $this->updateProductLot(self::STATUS_READY);
+		if ($ret > 0) return $this->setStatusCommon($user, self::STATUS_READY, $notrigger, 'UNIQUEPRODUCTSTATE_REOPEN');
+		else return $ret;
 	}
 
 	/**
