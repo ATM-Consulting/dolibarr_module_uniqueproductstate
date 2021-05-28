@@ -1098,6 +1098,7 @@ class UniqueProductState extends CommonObject
 		$sql.= " WHERE t.entity = ".$conf->entity;
 		// TODO script pour migrer les donner de l'ef spé vers l'ef créé par le module
 		$sql.= " AND ef.UPState_fk_soc = ".$fk_soc;
+		$sql.= " AND e.fk_soc = ef.UPState_fk_soc";
 
 		if (!empty($sqlFilter))
 		{

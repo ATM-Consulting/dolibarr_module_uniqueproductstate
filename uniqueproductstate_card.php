@@ -151,6 +151,7 @@ if (empty($reshook))
 	if ($action == 'add' && !empty($permissiontoadd))
 	{
 		$resql = $object->getProductToAdd($fk_soc);
+// if ($user->id == 39) {echo '<pre>'; var_dump($resql, $object->db->lastquery); exit;}
 		if ($resql)
 		{
 			$num = $db->num_rows($resql);
