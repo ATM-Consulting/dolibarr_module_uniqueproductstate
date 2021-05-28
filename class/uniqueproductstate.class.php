@@ -1088,8 +1088,7 @@ class UniqueProductState extends CommonObject
 
 		// TODO Trouver quel champs de l'expedition est garni à l'expédition... et l'ajouter à la requête
 		$sql = "SELECT t.rowid, t.batch, t.fk_product, ef.status as options_status, e.date_valid as shipping_date, ed.rowid as shipping_line_id";
-		//$sql.= ", ef.UPState_fk_soc as options_UPState_fk_soc";
-		$sql.= ", ef.ameublys_fk_soc as options_UPState_fk_soc"; // TODO script pour migrer les donner de l'ef spé vers l'ef créé par le module
+		$sql.= ", ef.UPState_fk_soc as options_UPState_fk_soc";
 		$sql.= " FROM ".MAIN_DB_PREFIX."product_lot as t";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."product_lot_extrafields as ef on (t.rowid = ef.fk_object)";
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."expeditiondet_batch as edb on edb.batch = t.batch";
@@ -1098,8 +1097,7 @@ class UniqueProductState extends CommonObject
 		$sql.= " LEFT JOIN ".MAIN_DB_PREFIX."commandedet as cd on cd.rowid = ed.fk_origin_line AND cd.fk_product = t.fk_product";
 		$sql.= " WHERE t.entity = ".$conf->entity;
 		// TODO script pour migrer les donner de l'ef spé vers l'ef créé par le module
-//		$sql.= " AND ef.UPState_fk_soc = ".$fk_soc;
-		$sql.= " AND ef.ameublys_fk_soc = ".$fk_soc;
+		$sql.= " AND ef.UPState_fk_soc = ".$fk_soc;
 
 		if (!empty($sqlFilter))
 		{
