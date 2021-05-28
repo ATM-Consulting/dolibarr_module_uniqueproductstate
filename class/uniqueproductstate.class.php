@@ -456,7 +456,7 @@ class UniqueProductState extends CommonObject
 		if (!empty($this->lines))
 		{
 			// reupdate product_lot status
-			if ($this->status == self::STATUS_DONE) $ret = $this->updateProductLot(self::STATUS_READY);
+			if ($this->status >= self::STATUS_READY) $ret = $this->updateProductLot(self::STATUS_READY);
 
 			foreach ($this->lines as $line) $line->delete($user, $notrigger);
 		}
