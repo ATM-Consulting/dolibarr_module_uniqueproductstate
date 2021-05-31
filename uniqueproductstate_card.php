@@ -531,7 +531,7 @@ if ($object->id > 0 && (empty($action) || ($action != 'edit' && $action != 'crea
 		print '</form>';
 	} else {
 		print $object->date ? dol_print_date($object->date, 'day') : '&nbsp;';
-		if ($object->date < dol_now() && $object->status < UniqueProductState::STATUS_DONE) {
+		if ($object->date + 86400 < dol_now() && $object->status < UniqueProductState::STATUS_DONE) {
 			print ' '.img_picto($langs->trans("Late"), "warning");
 		}
 	}
