@@ -351,7 +351,7 @@ class modUniqueProductState extends DolibarrModules
             'fk_menu'=>'fk_mainmenu=uniqueproductstate',
             // This is a Left menu entry
             'type'=>'left',
-            'titre'=>'ListUniqueProductState',
+            'titre'=>'UniqueProductState',
             'mainmenu'=>'uniqueproductstate',
             'leftmenu'=>'uniqueproductstate_uniqueproductstate',
             'url'=>'/uniqueproductstate/uniqueproductstate_list.php',
@@ -373,7 +373,7 @@ class modUniqueProductState extends DolibarrModules
             'type'=>'left',
             'titre'=>'NewUniqueProductState',
             'mainmenu'=>'uniqueproductstate',
-            'leftmenu'=>'uniqueproductstate_uniqueproductstate',
+            'leftmenu'=>'uniqueproductstate_uniqueproductstate_create',
             'url'=>'/uniqueproductstate/uniqueproductstate_card.php?action=create',
             // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
             'langs'=>'uniqueproductstate@uniqueproductstate',
@@ -386,6 +386,86 @@ class modUniqueProductState extends DolibarrModules
             // 0=Menu for internal users, 1=external users, 2=both
             'user'=>2
         );
+		$this->menu[$r++]=array(
+			// '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
+			'fk_menu'=>'fk_mainmenu=uniqueproductstate,fk_leftmenu=uniqueproductstate_uniqueproductstate',
+			// This is a Left menu entry
+			'type'=>'left',
+			'titre'=>'ListUniqueProductState',
+			'mainmenu'=>'uniqueproductstate',
+			'leftmenu'=>'uniqueproductstate_uniqueproductstate_list',
+			'url'=>'/uniqueproductstate/uniqueproductstate_list.php',
+			// Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
+			'langs'=>'uniqueproductstate@uniqueproductstate',
+			'position'=>1100+$r,
+			// Define condition to show or hide menu entry. Use '$conf->uniqueproductstate->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
+			'enabled'=>'$conf->uniqueproductstate->enabled',
+			// Use 'perms'=>'$user->rights->uniqueproductstate->level1->level2' if you want your menu with a permission rules
+			'perms'=>'1',
+			'target'=>'',
+			// 0=Menu for internal users, 1=external users, 2=both
+			'user'=>2,
+		);
+		$this->menu[$r++]=array(
+			// '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
+			'fk_menu'=>'fk_mainmenu=uniqueproductstate,fk_leftmenu=uniqueproductstate_uniqueproductstate_list',
+			// This is a Left menu entry
+			'type'=>'left',
+			'titre'=>'Draft',
+			'mainmenu'=>'uniqueproductstate',
+			'leftmenu'=>'uniqueproductstate_uniqueproductstate_list0',
+			'url'=>'/uniqueproductstate/uniqueproductstate_list.php?search_status=0',
+			// Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
+			'langs'=>'uniqueproductstate@uniqueproductstate',
+			'position'=>1100+$r,
+			// Define condition to show or hide menu entry. Use '$conf->uniqueproductstate->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
+			'enabled'=>'$conf->uniqueproductstate->enabled',
+			// Use 'perms'=>'$user->rights->uniqueproductstate->level1->level2' if you want your menu with a permission rules
+			'perms'=>'1',
+			'target'=>'',
+			// 0=Menu for internal users, 1=external users, 2=both
+			'user'=>2,
+		);
+		$this->menu[$r++]=array(
+			// '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
+			'fk_menu'=>'fk_mainmenu=uniqueproductstate,fk_leftmenu=uniqueproductstate_uniqueproductstate_list',
+			// This is a Left menu entry
+			'type'=>'left',
+			'titre'=>'Ready',
+			'mainmenu'=>'uniqueproductstate',
+			'leftmenu'=>'uniqueproductstate_uniqueproductstate_list1',
+			'url'=>'/uniqueproductstate/uniqueproductstate_list.php?search_status=1',
+			// Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
+			'langs'=>'uniqueproductstate@uniqueproductstate',
+			'position'=>1100+$r,
+			// Define condition to show or hide menu entry. Use '$conf->uniqueproductstate->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
+			'enabled'=>'$conf->uniqueproductstate->enabled',
+			// Use 'perms'=>'$user->rights->uniqueproductstate->level1->level2' if you want your menu with a permission rules
+			'perms'=>'1',
+			'target'=>'',
+			// 0=Menu for internal users, 1=external users, 2=both
+			'user'=>2,
+		);
+		$this->menu[$r++]=array(
+			// '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
+			'fk_menu'=>'fk_mainmenu=uniqueproductstate,fk_leftmenu=uniqueproductstate_uniqueproductstate_list',
+			// This is a Left menu entry
+			'type'=>'left',
+			'titre'=>'Done',
+			'mainmenu'=>'uniqueproductstate',
+			'leftmenu'=>'uniqueproductstate_uniqueproductstate_list2',
+			'url'=>'/uniqueproductstate/uniqueproductstate_list.php?search_status=2',
+			// Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
+			'langs'=>'uniqueproductstate@uniqueproductstate',
+			'position'=>1100+$r,
+			// Define condition to show or hide menu entry. Use '$conf->uniqueproductstate->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
+			'enabled'=>'$conf->uniqueproductstate->enabled',
+			// Use 'perms'=>'$user->rights->uniqueproductstate->level1->level2' if you want your menu with a permission rules
+			'perms'=>'1',
+			'target'=>'',
+			// 0=Menu for internal users, 1=external users, 2=both
+			'user'=>2,
+		);
 
 		/* END MODULEBUILDER LEFTMENU UNIQUEPRODUCTSTATE */
 		// Exports profiles provided by this module

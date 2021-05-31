@@ -212,7 +212,7 @@ $now = dol_now();
 
 //$help_url="EN:Module_UniqueProductState|FR:Module_UniqueProductState_FR|ES:Módulo_UniqueProductState";
 $help_url = '';
-$title = $langs->trans('ListOf', $langs->transnoentitiesnoconv("UniqueProductStates"));
+$title = $langs->trans('ListUniqueProductState');
 
 
 // Build and execute select
